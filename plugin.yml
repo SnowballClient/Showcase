@@ -1,0 +1,30 @@
+main: org.golde.snowball.showcaseplugin.Showcase
+name: Showcase
+version: 1.0
+description: "A plugin to Showcase the SnowballAPI's features"
+depend: [SnowballAPI, HolographicDisplays]
+author: Eric Golde
+website: https://eric.golde.org/
+
+commands:
+  spawn:
+    usage: /spawn
+    description: Go to spawn
+  cob:
+      description: Use to set, clear or view the command for the button you're looking at.
+      aliases:  [ButtonOnCommand]
+  setname:
+      usage: /setname <name>
+      description: Set your username
+  setskin:
+      usage: /setskin <url>
+      description: Set your skin
+  addcosmetic:
+      usage: /addcosmetic <cosmetic>
+      description: Adds a cosmetic to your player
+  removecosmetic:
+      usage: /removecosmetic <cosmetic>
+      description: Removes a cosmetic to your player
+  toastexample:
+      usage: /toastexample
+      description: Sends a example toast message

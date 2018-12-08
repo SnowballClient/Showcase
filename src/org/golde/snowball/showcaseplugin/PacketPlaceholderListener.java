@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.golde.snowball.api.Keyboard;
-import org.golde.snowball.showcaseplugin.Showcase.KeyGui;
+import org.golde.snowball.showcaseplugin.objs.KeyGui;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;

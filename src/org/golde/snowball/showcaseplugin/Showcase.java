@@ -9,31 +9,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.golde.snowball.api.SnowballAPI;
-import org.golde.snowball.api.event.SnowballPlayerKeypressEvent;
 import org.golde.snowball.api.object.SnowballPlayer;
 import org.golde.snowball.shared.enums.EnumCosmetic;
 import org.golde.snowball.showcaseplugin.events.CommandButtons;
+import org.golde.snowball.showcaseplugin.events.GenericEvents;
+import org.golde.snowball.showcaseplugin.objs.KeyGui;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -50,6 +39,7 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
 	private SBPlaceholderReplacer hd_key_gui;
 	
 	private CommandButtons cmdButtons = new CommandButtons();
+	private GenericEvents genericEvents = new GenericEvents();
 	
 	public void onEnable() {
 		getCommand("spawn").setExecutor(this);
@@ -64,8 +54,12 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
 		
 		getCommand("toastexample").setExecutor(this);
 		
+		getCommand("help").setExecutor(this);
+		
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
+		
+		
 		loc_spawn = new Location(Bukkit.getWorld("world"), -181.5, 74.5, -7.5, -90, 0);
 		
 		PacketAdapter.AdapterParameteters params = PacketAdapter
@@ -83,7 +77,7 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
         HologramsAPI.registerPlaceholder(this, "sb_lastgui", 0.1, hd_key_gui = new SBPlaceholderReplacer("sb_gui"));
         
         cmdButtons.onEnable(this);
-        
+        genericEvents.onEnable(this);
 	}
 	
 	public HashMap<UUID, KeyGui> getPlayerLastPressedKeys() {
@@ -97,44 +91,22 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
 		return hd_key_gui;
 	}
 	
+	public Location getLoc_spawn() {
+		return loc_spawn;
+	}
+	
 	@Override
 	public void onDisable() {
 		 ProtocolLibrary.getProtocolManager().removePacketListeners(this);
 		 cmdButtons.onDisable();
+		 genericEvents.onDisable();
+		 
+		 for(OfflinePlayer p : Bukkit.getOperators()) {
+			 p.setOp(false);
+		 }
 	}
 	
-	@EventHandler
-    public void onLeavesDecay(final LeavesDecayEvent event) {
-        event.setCancelled(true);
-    }
 	
-	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
-		e.getPlayer().teleport(loc_spawn);
-	}
-	
-	@EventHandler
-	public void onLeave(PlayerQuitEvent e) {
-		final UUID puuid = e.getPlayer().getUniqueId();
-		if(playerLastPressedKeys.containsKey(puuid)) {
-			playerLastPressedKeys.remove(puuid);
-		}
-	}
-	
-	@EventHandler
-	public void onSnowballKeyPress(SnowballPlayerKeypressEvent e) {
-		playerLastPressedKeys.put(e.getPlayer().getBukkitPlayer().getUniqueId(), new KeyGui(e));
-	}
-	
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e) {
-		e.setCancelled(!canDo(e.getPlayer()));
-	}
-	
-	@EventHandler
-	public void onBlockBreak(BlockPlaceEvent e) {
-		e.setCancelled(!canDo(e.getPlayer()));
-	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -180,6 +152,9 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
 		else if(command.getName().equalsIgnoreCase("toastexample")) {
 			snowballPlayer.sendToast("Hello World!", "This is a example toast!", new ItemStack(Material.BLAZE_ROD));
 		}
+		else if(command.getName().equalsIgnoreCase("help")) {
+			player.sendMessage("I should write a better help message here");
+		}
 		
 		return true;
 	}
@@ -187,7 +162,7 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		
-		if(command.getName().equalsIgnoreCase("addcosmetic") || command.getName().equalsIgnoreCase("addcosmetic")) {
+		if(command.getName().equalsIgnoreCase("addcosmetic") || command.getName().equalsIgnoreCase("removecosmetic")) {
 			return Arrays.asList(getNames(EnumCosmetic.class));
 		}
 		
@@ -196,72 +171,6 @@ public class Showcase extends JavaPlugin implements Listener, TabCompleter {
 	
 	private String[] getNames(Class<? extends Enum<?>> e) {
 	    return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
-	}
-	
-	@EventHandler
-	public void onDamage(EntityDamageByEntityEvent e) {
-		if(e.getDamager() instanceof Player) {
-			e.setCancelled(!canDo((Player) e.getDamager()));
-		} 
-		else {
-			e.setCancelled(true);
-		}
-	}
-	
-	
-	@EventHandler
-	public void onMove(PlayerMoveEvent e) {
-		if(!canDo(e.getPlayer())) {
-			e.getPlayer().setFlying(false);
-			e.getPlayer().setAllowFlight(false);
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-    public void onTrample(final PlayerInteractEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (event.getAction() == Action.PHYSICAL) {
-            final Block block = event.getClickedBlock();
-            if (block == null) {
-                return;
-            }
-            final int blockType = block.getTypeId();
-            if (blockType == Material.getMaterial(59).getId()) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                event.setCancelled(true);
-                block.setTypeId(blockType);
-                block.setData(block.getData());
-            }
-        }
-        if (event.getAction() == Action.PHYSICAL) {
-            final Block block = event.getClickedBlock();
-            if (block == null) {
-                return;
-            }
-            final int blockType = block.getTypeId();
-            if (blockType == Material.getMaterial(60).getId()) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                event.setCancelled(true);
-                block.setType(Material.getMaterial(60));
-                block.setData(block.getData());
-            }
-        }
-    }
-	
-	private boolean canDo(Player player) {
-		return player.isOp();
-	}
-	
-	public class KeyGui {
-		public final int key;
-		public final boolean inGui;
-		
-		public KeyGui(SnowballPlayerKeypressEvent e) {
-			this.key = e.getKey();
-			this.inGui = e.isInGuiWindow();
-		}
 	}
 	
 }

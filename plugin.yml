@@ -28,3 +28,6 @@ commands:
   toastexample:
       usage: /toastexample
       description: Sends a example toast message
+  help:
+      usage: /help
+      description: Shows you some sample commands to use

@@ -17,6 +17,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,21 +29,8 @@ import org.golde.snowball.api.event.SnowballPlayerKeypressEvent;
 import org.golde.snowball.showcaseplugin.Showcase;
 import org.golde.snowball.showcaseplugin.objs.KeyGui;
 
-public class GenericEvents implements ShowcaseEvent {
+public class GenericEvents extends ShowcaseEvent {
 
-	private Showcase pl;
-	
-	@Override
-	public void onEnable(Showcase pl) {
-		this.pl = pl;
-		Bukkit.getPluginManager().registerEvents(this, pl);
-	}
-
-	@Override
-	public void onDisable() {
-		
-	}
-	
 	@EventHandler
     public void onLeavesDecay(final LeavesDecayEvent event) {
         event.setCancelled(true);

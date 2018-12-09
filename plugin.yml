@@ -28,6 +28,9 @@ commands:
   toastexample:
       usage: /toastexample
       description: Sends a example toast message
+  refreshclientworld:
+      usage: /refreshclientworld
+      description: Refreshes your client world
   help:
       usage: /help
       description: Shows you some sample commands to use

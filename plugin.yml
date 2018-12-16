@@ -19,12 +19,6 @@ commands:
   setskin:
       usage: /setskin <url>
       description: Set your skin
-  addcosmetic:
-      usage: /addcosmetic <cosmetic>
-      description: Adds a cosmetic to your player
-  removecosmetic:
-      usage: /removecosmetic <cosmetic>
-      description: Removes a cosmetic to your player
   toastexample:
       usage: /toastexample
       description: Sends a example toast message

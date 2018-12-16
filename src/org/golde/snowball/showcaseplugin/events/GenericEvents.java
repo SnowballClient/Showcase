@@ -19,6 +19,8 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -38,11 +40,8 @@ public class GenericEvents extends ShowcaseEvent {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		System.out.println("PLAYER JOINED");
-		e.getPlayer().sendMessage("HI!");
 		e.getPlayer().teleport(pl.getLoc_spawn().clone());
 		e.getPlayer().setGameMode(GameMode.CREATIVE);
-		e.getPlayer().setOp(true);
 	}
 	
 	@EventHandler
@@ -130,6 +129,15 @@ public class GenericEvents extends ShowcaseEvent {
                 block.setData(block.getData());
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerBucketFill(final PlayerBucketFillEvent e) {
+    	e.setCancelled(true);
+    }
+    @EventHandler
+    public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent e) {
+    	e.setCancelled(true);
     }
 	
 	private boolean canDo(Player player) {

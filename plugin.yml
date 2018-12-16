@@ -2,7 +2,7 @@ main: org.golde.snowball.showcaseplugin.Showcase
 name: Showcase
 version: 1.0
 description: "A plugin to Showcase the SnowballAPI's features"
-depend: [SnowballAPI, HolographicDisplays]
+depend: [SnowballAPI, ProtocolLib, HolographicDisplays]
 author: Eric Golde
 website: https://eric.golde.org/
 
